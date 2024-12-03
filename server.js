@@ -1,13 +1,17 @@
 require("dotenv").config();
-const express = require('express');
+const express = require("express");
 const app = express();
 const cors = require("cors");
 const path = require("path");
-const cookieParser = require('cookie-parser');
-const { logger } = require('./middleware/logger');
-const errorHandler = require('./middleware/errorHandler');
-const corsOptions = require('./config/corsOptions');
+const cookieParser = require("cookie-parser");
+const { logger, logEvents } = require("./middleware/logger");
+const errorHandler = require("./middleware/errorHandler");
+const corsOptions = require("./config/corsOptions");
+const connectDB = require("./config/dbConnection");
+const mongoose = require("mongoose");
 const PORT = process.env.PORT || 8080;
+
+connectDB();
 
 app.use(logger);
 
@@ -17,7 +21,11 @@ app.use(cookieParser());
 
 app.use("/", express.static(path.join(__dirname, "/public")))
 
+app.use(express.json());
+
 app.use("/", require("./routes/root"));
+app.use("/users", require("./routes/userRoutes"));
+app.use("/tickets", require("./routes/ticketRoutes"));
 
 // * --> Wildcard, untuk menghandle error 404
 app.all("*", (req, res) => {
@@ -36,4 +44,16 @@ app.all("*", (req, res) => {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log(`server berjalan pada port ${PORT}`));
+// hal yang akan dilakukan jika koneksi DB berhasil, sifatnya sekali
+mongoose.connection.once("open", () => {
+    console.log("Berhasil konek ke MongoDB");
+    app.listen(PORT, () => console.log(`server berjalan pada port ${PORT}`));
+})
+
+// error handler jika koneksi DB gagal, sifatnya berulang
+mongoose.connection.on("error", err => {
+    console.log(err);
+    logEvents(`${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`),
+        "mongoDBErrLog.log"
+
+})
