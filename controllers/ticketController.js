@@ -33,14 +33,10 @@ const getAllTickets = asyncHandler(async (req, res) => {
 });
 
 const createTicket = asyncHandler(async (req, res) => {
-    // destructure body dari client
     const { title, desc, user } = req.body;
 
-    // validasi inputan
     if (!title || !desc || !user) {
-        return res.status(400).json({
-            message: 'Semua atribut harus terisi!'
-        })
+        return res.status(400).json({ message: "Semua atribut harus terisi!" });
     }
 
     // validasi duplicate
@@ -53,9 +49,9 @@ const createTicket = asyncHandler(async (req, res) => {
     const ticket = await Ticket.create({ title, desc, user });
 
     if (ticket) {
-        res.status(200).json({ message: `Ticket: ${title} telah dibuat!` });
+        res.status(201).json({ message: `Ticket: ${title} telah dibuat!` });
     } else {
-        res.status(400).json({ message: "Gagal membuat ticket baru" });
+        res.status(400).json({ message: "Gagal membuat ticket baru." });
     }
 });
 

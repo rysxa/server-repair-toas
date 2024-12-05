@@ -4,9 +4,9 @@ const router = express.Router();
 
 router
     .route("/")
-    .get(ticketController.getAllUsers)
-    .post(ticketController.createUser)
-    .patch(ticketController.updateUser)
-    .delete(ticketController.deleteUser);
+    .get(ticketController.getAllTickets)
+    .post(ticketController.createTicket)
+    .patch(ticketController.updateTicket)
+    .delete(ticketController.deleteTicket);
 
 module.exports = router;
