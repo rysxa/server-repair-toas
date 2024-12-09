@@ -1,6 +1,9 @@
 const express = require("express");
 const ticketController = require('../controllers/ticketController');
+const JWTVerifier = require("../middleware/JWTVerifier");
 const router = express.Router();
+
+router.use(JWTVerifier); // middleware
 
 router
     .route("/")
